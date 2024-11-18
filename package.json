@@ -1,0 +1,26 @@
+{
+  "name": "db-lock",
+  "version": "0.0.0",
+  "description": "Simple concurrent lock for DB patterns",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "test": "standard && node test.js"
+  },
+  "devDependencies": {
+    "brittle": "^3.7.0",
+    "standard": "^17.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/holepunchto/db-lock.git"
+  },
+  "author": "Holepunch Inc.",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/holepunchto/db-lock/issues"
+  },
+  "homepage": "https://github.com/holepunchto/db-lock"
+}
