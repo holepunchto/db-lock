@@ -1,6 +1,6 @@
 {
   "name": "db-lock",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Simple concurrent lock for DB patterns",
   "main": "index.js",
   "files": [
