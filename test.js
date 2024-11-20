@@ -80,9 +80,7 @@ test('respects maxParallel softlimit', async function (t) {
     enter () {
       return true
     },
-    exit (state) {
-      exited = true
-    }
+    exit (state) {}
   })
 
   run()
