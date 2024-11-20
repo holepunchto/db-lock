@@ -1,37 +1,64 @@
 module.exports = class DBLock {
-  constructor ({ enter, exit }) {
+  constructor ({ enter, exit, maxParallel = -1 } = {}) {
     this.entered = 0
     this.state = null
     this.locked = null
+    this.maxParallel = maxParallel
+    this.needsDrain = false
     this.onenter = enter || null
     this.onexit = exit || null
+    this.pendingExits = []
   }
 
   async enter () {
-    if (this.entered === 0 && this.onenter !== null) {
+    if (this.needsDrain) await this.waitForExit()
+
+    if (this.entered === 0) {
       const release = await this._lock()
+
       try {
-        if (this.state === null) this.state = await this.onenter()
+        if (++this.entered === 1 && this.onenter !== null) this.state = await this.onenter()
       } finally {
         release()
       }
+    } else {
+      this.entered++
     }
 
-    this.entered++
+    if (this.maxParallel >= 0 && this.entered >= this.maxParallel) this.needsDrain = true
+
     return this.state
   }
 
   async exit () {
-    if (this.entered === 1 && this.onexit !== null) {
+    this.entered--
+
+    if (this.entered === 0) {
       const release = await this._lock()
+      const exits = this.pendingExits
+      const state = this.state
+
+      this.pendingExits = []
+      this.state = null
+      this.needsDrain = false
+
       try {
-        await this.onexit(this.state)
+        if (this.onexit !== null) await this.onexit(state)
+        for (let i = 0; i < exits.length; i++) exits[i]()
       } finally {
         release()
       }
+
+      return
     }
 
-    this.entered--
+    return this.waitForExit()
+  }
+
+  waitForExit () {
+    return new Promise((resolve) => {
+      this.pendingExits.push(resolve)
+    })
   }
 
   async _lock () {

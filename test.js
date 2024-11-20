@@ -45,3 +45,29 @@ test('basic', async function (t) {
     await l.exit()
   }
 })
+
+test('exit waits for flush', async function (t) {
+  t.plan(3)
+
+  let exited = false
+
+  const l = new DBLock({
+    enter () {
+      return true
+    },
+    exit (state) {
+      exited = true
+    }
+  })
+
+  run(100)
+  run(10)
+  run(300)
+
+  async function run (ms) {
+    await l.enter()
+    await new Promise(resolve => setTimeout(resolve, ms))
+    await l.exit()
+    t.ok(exited)
+  }
+})
