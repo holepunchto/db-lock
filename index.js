@@ -1,5 +1,6 @@
 module.exports = class DBLock {
   constructor ({ enter, exit, maxParallel = -1 } = {}) {
+    this.parallel = 0
     this.entered = 0
     this.state = null
     this.locked = null
@@ -11,7 +12,8 @@ module.exports = class DBLock {
   }
 
   async enter () {
-    if (this.needsDrain) await this.waitForExit()
+    if (this.maxParallel >= 0 && this.parallel >= this.maxParallel) await this.waitForExit()
+    this.parallel++
 
     if (this.entered === 0) {
       const release = await this._lock()
@@ -24,8 +26,6 @@ module.exports = class DBLock {
     } else {
       this.entered++
     }
-
-    if (this.maxParallel >= 0 && this.entered >= this.maxParallel) this.needsDrain = true
 
     return this.state
   }
@@ -40,7 +40,7 @@ module.exports = class DBLock {
 
       this.pendingExits = []
       this.state = null
-      this.needsDrain = false
+      this.parallel = 0
 
       try {
         if (this.onexit !== null) await this.onexit(state)
@@ -48,7 +48,6 @@ module.exports = class DBLock {
       } finally {
         release()
       }
-
       return
     }
 

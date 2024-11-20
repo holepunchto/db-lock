@@ -71,3 +71,29 @@ test('exit waits for flush', async function (t) {
     t.ok(exited)
   }
 })
+
+test('respects maxParallel softlimit', async function (t) {
+  t.plan(4)
+
+  const l = new DBLock({
+    maxParallel: 2,
+    enter () {
+      return true
+    },
+    exit (state) {
+      exited = true
+    }
+  })
+
+  run()
+  run()
+  run()
+  run()
+
+  async function run () {
+    await l.enter()
+    await new Promise(resolve => setImmediate(resolve))
+    t.ok(l.entered <= 2)
+    await l.exit()
+  }
+})
