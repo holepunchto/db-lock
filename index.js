@@ -19,7 +19,8 @@ module.exports = class DBLock {
       const release = await this._lock()
 
       try {
-        if (++this.entered === 1 && this.onenter !== null) this.state = await this.onenter()
+        if (this.entered === 0 && this.onenter !== null) this.state = await this.onenter()
+        this.entered++
       } finally {
         release()
       }
