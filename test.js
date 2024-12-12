@@ -72,7 +72,7 @@ test('exit waits for flush', async function (t) {
   }
 })
 
-test('respects maxParallel softlimit', async function (t) {
+test('respects maxParallel', async function (t) {
   t.plan(4)
 
   const l = new DBLock({
@@ -92,6 +92,31 @@ test('respects maxParallel softlimit', async function (t) {
     await l.enter()
     await new Promise(resolve => setImmediate(resolve))
     t.ok(l.entered <= 2)
+    await l.exit()
+  }
+})
+
+test('maxParallel 1, is basically a mutex', async function (t) {
+  t.plan(4 * 2)
+
+  const l = new DBLock({
+    maxParallel: 1,
+    enter () {
+      return true
+    },
+    exit (state) {}
+  })
+
+  run()
+  run()
+  run()
+  run()
+
+  async function run () {
+    await l.enter()
+    t.ok(l.entered === 1)
+    await new Promise(resolve => setImmediate(resolve))
+    t.ok(l.entered === 1)
     await l.exit()
   }
 })
