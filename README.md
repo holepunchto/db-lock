@@ -1,6 +1,6 @@
 # db-lock
 
-Simple concurrent lock for DB patterns allowing for multiple transactions to be open in parallel.
+Simple concurrent lock for DB patterns allowing for multiple transactions with a shared state to be open in parallel.
 
 ```
 npm install db-lock
@@ -31,7 +31,7 @@ await l.exit() // flushes the tx on last exit
 
 Create a new lock with an `enter` and `exit` handlers defined.
 
-The async `enter` handler should return a 'transaction' (`tx`) that will be used when it's the caller's turn to work on the database.
+The async `enter` handler should return a 'transaction' (`tx`) that will be used when it's the caller's turn to work on the database in parallel.
 
 For example with [HyperDB](https://github.com/holepunchto/hyperdb), you can make a transaction like so:
 
@@ -69,11 +69,11 @@ The number of current transactions entered.
 
 #### `const tx = await lock.enter()`
 
-Await a lock on the database which returns a transaction value to work with while holding the lock.
+Await a transaction value on the database to work with while holding the lock.
 
 #### `await lock.exit()`
 
-When called flushes the transaction as defined in the `exit` handler. Will resolve when completed.
+When called flushes the transaction as defined in the `exit` handler. Will resolve when all current transaction have exited.
 
 ## License
 
