@@ -61,7 +61,7 @@ const lock = new DBLock({
 })
 ```
 
-`maxParallel` is the max number of transactions that can be entered concurrently.
+`maxParallel` is the max number of transactions that can be entered concurrently. Defaults to unlimited (`-1`).
 
 #### `lock.entered`
 
