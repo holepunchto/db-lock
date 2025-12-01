@@ -9,8 +9,9 @@
   "scripts": {
     "format": "prettier --write .",
     "lint": "prettier --check . && lunte",
-    "test": "npm run test:node",
-    "test:node": "brittle-node --coverage test.js"
+    "test": "npm run test:node && npm run test:bare",
+    "test:node": "brittle-node --coverage test.js",
+    "test:bare": "brittle-bare --coverage test.js"
   },
   "devDependencies": {
     "brittle": "^3.7.0",
