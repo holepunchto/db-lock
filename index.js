@@ -12,16 +12,18 @@ module.exports = class DBLock {
   }
 
   async enter() {
-    while (this.maxParallel >= 0 && this.parallel >= this.maxParallel)
+    while (this.maxParallel >= 0 && this.parallel >= this.maxParallel) {
       await this.waitForExit()
+    }
     this.parallel++
 
     if (this.entered === 0) {
       const release = await this._lock()
 
       try {
-        if (this.entered === 0 && this.onenter !== null)
+        if (this.entered === 0 && this.onenter !== null) {
           this.state = await this.onenter()
+        }
         this.entered++
       } finally {
         release()
