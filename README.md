@@ -8,14 +8,14 @@ npm install db-lock
 
 ## Usage
 
-``` js
+```js
 const DBLock = require('db-lock')
 
 const l = new DBLock({
-  async enter () {
+  async enter() {
     return db.transaction()
   },
-  async exit (tx) {
+  async exit(tx) {
     await tx.flush()
   }
 })

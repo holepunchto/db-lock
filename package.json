@@ -7,11 +7,17 @@
     "index.js"
   ],
   "scripts": {
-    "test": "standard && node test.js"
+    "format": "prettier --write .",
+    "lint": "prettier --check . && lunte",
+    "test": "npm run test:node && npm run test:bare",
+    "test:node": "brittle-node --coverage test.js",
+    "test:bare": "brittle-bare --coverage test.js"
   },
   "devDependencies": {
     "brittle": "^3.7.0",
-    "standard": "^17.1.2"
+    "lunte": "^1.0.0",
+    "prettier": "^3.6.2",
+    "prettier-config-holepunch": "^1.0.0"
   },
   "repository": {
     "type": "git",

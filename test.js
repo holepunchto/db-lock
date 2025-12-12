@@ -4,11 +4,11 @@ const test = require('brittle')
 test('basic', async function (t) {
   const state = { ran: 0 }
   const l = new DBLock({
-    enter () {
+    enter() {
       t.is(state.ran, 0)
       return state
     },
-    exit (state) {
+    exit(state) {
       t.is(state.ran, 3)
     }
   })
@@ -38,10 +38,10 @@ test('basic', async function (t) {
 
   t.is(state.ran, 3)
 
-  async function run () {
+  async function run() {
     const st = await l.enter()
     st.ran++
-    await new Promise(resolve => setImmediate(resolve))
+    await new Promise((resolve) => setImmediate(resolve))
     await l.exit()
   }
 })
@@ -52,10 +52,10 @@ test('exit waits for flush', async function (t) {
   let exited = false
 
   const l = new DBLock({
-    enter () {
+    enter() {
       return true
     },
-    exit (state) {
+    exit(state) {
       exited = true
     }
   })
@@ -64,9 +64,9 @@ test('exit waits for flush', async function (t) {
   run(10)
   run(300)
 
-  async function run (ms) {
+  async function run(ms) {
     await l.enter()
-    await new Promise(resolve => setTimeout(resolve, ms))
+    await new Promise((resolve) => setTimeout(resolve, ms))
     await l.exit()
     t.ok(exited)
   }
@@ -77,10 +77,10 @@ test('respects maxParallel', async function (t) {
 
   const l = new DBLock({
     maxParallel: 2,
-    enter () {
+    enter() {
       return true
     },
-    exit (state) {}
+    exit(state) {}
   })
 
   run()
@@ -88,9 +88,9 @@ test('respects maxParallel', async function (t) {
   run()
   run()
 
-  async function run () {
+  async function run() {
     await l.enter()
-    await new Promise(resolve => setImmediate(resolve))
+    await new Promise((resolve) => setImmediate(resolve))
     t.ok(l.entered <= 2)
     await l.exit()
   }
@@ -101,10 +101,10 @@ test('maxParallel 1, is basically a mutex', async function (t) {
 
   const l = new DBLock({
     maxParallel: 1,
-    enter () {
+    enter() {
       return true
     },
-    exit (state) {}
+    exit(state) {}
   })
 
   run()
@@ -112,10 +112,10 @@ test('maxParallel 1, is basically a mutex', async function (t) {
   run()
   run()
 
-  async function run () {
+  async function run() {
     await l.enter()
     t.ok(l.entered === 1)
-    await new Promise(resolve => setImmediate(resolve))
+    await new Promise((resolve) => setImmediate(resolve))
     t.ok(l.entered === 1)
     await l.exit()
   }
